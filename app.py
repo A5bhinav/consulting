@@ -53,7 +53,7 @@ def generate():
     club_description = form["club_description"].strip()
 
     try:
-        pitch, scraped = generate_pitch(
+        pitch, scraped, brand = generate_pitch(
             company_name=company_name,
             company_url=company_url,
             industry=industry,
@@ -66,7 +66,7 @@ def generate():
         print("[POST] /generate → 500")
         return render_template("index.html", errors=[str(e)], form_data=form)
 
-    html = build_html_page(pitch, company_name, scraped)
+    html = build_html_page(pitch, company_name, scraped, brand)
     slug = slugify(company_name)
     filename = f"{slug}-pitch.html"
     (OUTPUT_DIR / filename).write_text(html, encoding="utf-8")
