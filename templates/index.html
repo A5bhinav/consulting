@@ -83,8 +83,8 @@
           <div class="pt-0.5">
             <p class="text-sm font-semibold text-white mb-1">Describe the target</p>
             <p class="text-slate-400 text-xs leading-relaxed">
-              Company URL, industry, and your proposed solution. Paste a draft email
-              if you have one.
+              Company URL, industry, and your proposed solution. Paste any recent
+              news or context to make the pitch more timely.
             </p>
           </div>
         </div>
@@ -116,8 +116,8 @@
           <div class="pt-0.5">
             <p class="text-sm font-semibold text-white mb-1">Get a pitch + email</p>
             <p class="text-slate-400 text-xs leading-relaxed">
-              A polished HTML pitch page and a cold outreach email, both personalized
-              to how this specific company operates.
+              A polished HTML pitch page — branded to the company — and a cold
+              outreach email, both personalized to how this specific company operates.
             </p>
           </div>
         </div>
@@ -126,8 +126,11 @@
     </div>
 
     <!-- Footer -->
-    <div class="mt-12 pt-8 border-t border-white/10">
-      <p class="text-slate-500 text-xs">Powered by Claude · Built for consulting clubs</p>
+    <div class="mt-12 pt-8 border-t border-white/10 flex items-center justify-between">
+      <p class="text-slate-500 text-xs">Powered by Claude</p>
+      <a href="/pitches" class="text-slate-400 text-xs hover:text-white transition-colors">
+        View past pitches →
+      </a>
     </div>
 
   </aside>
@@ -192,7 +195,7 @@
             </div>
           </div>
 
-          <div>
+          <div class="mb-4">
             <label class="block text-xs font-medium text-slate-600 mb-1.5">
               Website URL <span class="text-indigo-500">*</span>
             </label>
@@ -204,6 +207,25 @@
               value="{{ form_data.company_url if form_data else '' }}"
               class="input-base"
             />
+          </div>
+
+          <div>
+            <div class="flex items-baseline justify-between mb-1">
+              <label class="block text-xs font-medium text-slate-600">
+                Recent news or context
+              </label>
+              <span class="text-xs text-slate-400">Optional but powerful</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-1.5">
+              Paste a news excerpt, funding announcement, earnings note, or anything
+              recent. Makes the problem statement specific and timely.
+            </p>
+            <textarea
+              name="recent_context"
+              rows="3"
+              placeholder="e.g. Cava reported a 1.4% traffic dip in Q4 2025, concentrated in Midwest markets opened in the last 18 months..."
+              class="input-base"
+            >{{ form_data.recent_context if form_data else '' }}</textarea>
           </div>
         </div>
 
@@ -231,7 +253,7 @@
             >{{ form_data.proposed_solution if form_data else '' }}</textarea>
           </div>
 
-          <div class="mb-4">
+          <div>
             <div class="flex items-baseline justify-between mb-1">
               <label class="block text-xs font-medium text-slate-600">
                 Outreach email draft
@@ -247,6 +269,44 @@
               placeholder="Paste a draft or a few bullet points..."
               class="input-base"
             >{{ form_data.email_draft if form_data else '' }}</textarea>
+          </div>
+        </div>
+
+        <div class="border-t border-slate-100 mb-7"></div>
+
+        <!-- Section: About you -->
+        <div class="mb-7">
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
+            About you
+          </p>
+
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1.5">
+                Your name <span class="text-indigo-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="sender_name"
+                required
+                placeholder="e.g. Andrew Li"
+                value="{{ form_data.sender_name if form_data else '' }}"
+                class="input-base"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1.5">
+                Your email <span class="text-indigo-500">*</span>
+              </label>
+              <input
+                type="email"
+                name="sender_email"
+                required
+                placeholder="you@berkeley.edu"
+                value="{{ form_data.sender_email if form_data else '' }}"
+                class="input-base"
+              />
+            </div>
           </div>
 
           <div>

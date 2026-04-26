@@ -30,3 +30,11 @@ Costco's renewal rate sits above 90 percent, which means the growth question isn
 Costco's fulfillment model for big-ticket and bulky direct-ship items has structurally diverged from the warehouse replenishment logic that the rest of the supply chain is optimized around — and the mismatch is showing up in lead time variance and inventory imbalances that don't get flagged until they hit the floor. We've scoped a 6-week vendor alignment audit targeting the top 40 direct-import suppliers, with a deliverable that gives your logistics and merchandising teams a ranked action list, not a report to file. This is work we can begin within two weeks of alignment. Would you have 15 minutes this week or next to hear two specific findings from our preliminary analysis?
 
 ---
+
+## Amazon
+
+**Subject:** Amazon Leo's entry window against Starlink — a specific angle worth 15 minutes
+
+The $11.6B Globalstar acquisition gives Amazon Leo licensed spectrum and an Apple direct-to-device channel that Starlink can't replicate — but Globalstar's legacy ground infrastructure covers fewer than 50 stations globally, which creates a real deployment sequencing problem before Leo can compete on coverage. We're a strategy consulting team at UC Berkeley's Paradigm Consulting, and we've been mapping the specific verticals where Starlink's enterprise churn and pricing gaps create a realistic entry window for Leo in the next 24 months. We'd like to share a 6-week engagement proposal built around that analysis — one concrete deliverable being a segment-by-segment market entry map tied to Leo's current spectrum position. Would a 15-minute call this or next week work to walk through the framing?
+
+---

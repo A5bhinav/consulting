@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import Optional
 from urllib.parse import urlparse
@@ -19,6 +20,7 @@ PITCH_PROMPT_TEMPLATE = (
     "Company Name: {company_name}\n"
     "Industry: {industry}\n"
     "Company Website Content (scraped):\n---\n{scraped_content}\n---\n"
+    "Recent news / context about {company_name}:\n---\n{recent_context}\n---\n"
     "Our Proposed Solution: {proposed_solution}\n"
     "Our Club / Team Description: {club_description}\n"
     "Outreach Email Draft: {email_draft}\n\n"
@@ -29,6 +31,13 @@ PITCH_PROMPT_TEMPLATE = (
     "operates — not a general industry trend.\n"
     "- The solution must name a specific deliverable (e.g., 'a 4-week pricing "
     "audit of your SMB tier'), not a category.\n"
+    "- If recent news or context is provided above, weave a specific detail from it "
+    "into the problem statement — a funding announcement, quarterly result, product "
+    "launch, or press story makes the pitch feel timely rather than generic.\n"
+    "- Include at least one specific metric, percentage, or timeframe in both "
+    "problem_statement and expected_impact. Vague language fails the quality bar: "
+    "write '30-90 day post-signup drop-off' not 'retention challenges', "
+    "write 'reduce CAC by an estimated 15-20%' not 'lower acquisition costs'.\n"
     "- Avoid all of: 'in today's competitive landscape', 'leverage synergies', "
     "'best-in-class', 'holistic approach', 'empower', 'robust', "
     "'innovative solutions'.\n"
@@ -194,6 +203,7 @@ def call_claude(prompt: str) -> dict:
 
     client = anthropic.Anthropic(api_key=api_key)
     last_error: Exception = RuntimeError("unknown")
+    cleaned = ""
 
     for attempt in range(2):
         try:
@@ -209,8 +219,7 @@ def call_claude(prompt: str) -> dict:
         except json.JSONDecodeError as e:
             last_error = e
             print(f"[WARN] JSON parse failed on attempt {attempt + 1}: {e}")
-            cleaned_preview = cleaned[:300] if "cleaned" in dir() else "N/A"  # noqa: F821
-            print(f"[WARN] Cleaned text was: {cleaned_preview}")
+            print(f"[WARN] Cleaned text was: {cleaned[:300]}")
         except anthropic.APIError as e:
             raise RuntimeError(f"Claude API error: {e}") from e
 
@@ -265,6 +274,7 @@ def generate_pitch(
     proposed_solution: str,
     email_draft: str,
     club_description: str,
+    recent_context: str = "",
 ) -> tuple[dict, ScrapedContext, BrandContext]:
     scraped = scrape_company(company_url)
     scraped_content = (
@@ -273,18 +283,25 @@ def generate_pitch(
         else f"[Scraping failed: {scraped.error}. Using user-provided description only.]"
     )
 
-    brand = get_brand_identity(company_name, industry, scraped_content, company_url)
-
-    prompt = PITCH_PROMPT_TEMPLATE.format(
+    pitch_prompt = PITCH_PROMPT_TEMPLATE.format(
         company_name=company_name,
         industry=industry,
         scraped_content=scraped_content,
         proposed_solution=proposed_solution,
         club_description=club_description,
         email_draft=email_draft or "No draft provided.",
+        recent_context=recent_context or "No recent context provided.",
     )
 
-    pitch = call_claude(prompt)
+    # Brand and pitch calls are independent — run them in parallel.
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        brand_future = executor.submit(
+            get_brand_identity, company_name, industry, scraped_content, company_url
+        )
+        pitch_future = executor.submit(call_claude, pitch_prompt)
+        brand = brand_future.result()
+        pitch = pitch_future.result()
+
     missing = [k for k in REQUIRED_KEYS if k not in pitch or not pitch[k]]
     if missing:
         raise RuntimeError(f"Claude response missing required keys: {missing}")
@@ -338,7 +355,6 @@ def _build_hero(
     muted_cls = (
         "text-slate-300" if brand.text_on_primary == "white" else "text-slate-600"
     )
-    # Invert logo to white on dark backgrounds; show original on light backgrounds
     logo_filter = "brightness-0 invert" if brand.text_on_primary == "white" else ""
     logo_html = (
         f'    <img src="{brand.logo_url}" alt="{company_name}" '
@@ -362,7 +378,7 @@ def _build_hero(
     )
 
 
-def _build_cta(cta_body: str, accent_color: str) -> str:
+def _build_cta(cta_body: str, accent_color: str, sender_email: str) -> str:
     return (
         f'<section style="background:{accent_color};" class="px-6 py-16 text-white">\n'
         f'  <div class="max-w-4xl mx-auto text-center">\n'
@@ -370,10 +386,10 @@ def _build_cta(cta_body: str, accent_color: str) -> str:
         f"Ready to take a look?</h2>\n"
         f'    <p class="text-white/80 text-lg mb-8 max-w-2xl mx-auto">'
         f"{cta_body}</p>\n"
-        f'    <a href="mailto:" '
+        f'    <a href="mailto:{sender_email}" '
         f'style="color:{accent_color};" '
         f'class="inline-block bg-white font-semibold px-8 py-4 rounded-lg '
-        f'opacity-100 hover:opacity-90 transition-opacity">Get in touch</a>\n'
+        f'hover:opacity-90 transition-opacity">Get in touch</a>\n'
         f"  </div>\n</section>\n"
     )
 
@@ -396,8 +412,36 @@ def _build_about(about: str, brand: BrandContext) -> str:
     )
 
 
+def _build_sender_card(
+    sender_name: str, sender_email: str, accent_color: str
+) -> str:
+    initials = "".join(p[0].upper() for p in sender_name.split()[:2])
+    return (
+        '<section class="bg-white px-6 py-12 border-t border-slate-200">\n'
+        '  <div class="max-w-4xl mx-auto">\n'
+        f'    <p style="color:{accent_color};" '
+        f'class="text-xs font-semibold uppercase tracking-widest mb-5">Reach out</p>\n'
+        f'    <div class="flex items-center gap-5">\n'
+        f'      <div style="background:{accent_color};" '
+        f'class="w-12 h-12 rounded-full flex items-center justify-center '
+        f'text-white font-bold text-lg shrink-0">{initials}</div>\n'
+        f'      <div>\n'
+        f'        <p class="font-semibold text-slate-900 text-base">{sender_name}</p>\n'
+        f'        <a href="mailto:{sender_email}" style="color:{accent_color};" '
+        f'class="text-sm hover:underline">{sender_email}</a>\n'
+        f'      </div>\n'
+        f'    </div>\n'
+        f'  </div>\n</section>\n'
+    )
+
+
 def build_html_page(
-    pitch: dict, company_name: str, scraped: ScrapedContext, brand: BrandContext
+    pitch: dict,
+    company_name: str,
+    scraped: ScrapedContext,
+    brand: BrandContext,
+    sender_name: str,
+    sender_email: str,
 ) -> str:
     font_param = brand.font_name.replace(" ", "+")
     fonts = (
@@ -446,7 +490,8 @@ def build_html_page(
             "Our Solution", "What we'd do", solution, brand.accent_color, bg_slate=True
         )
         + _content_section("Expected Impact", "What changes", impact, brand.accent_color)
-        + _build_cta(cta_body, brand.accent_color)
+        + _build_cta(cta_body, brand.accent_color, sender_email)
         + _build_about(about, brand)
+        + _build_sender_card(sender_name, sender_email, brand.accent_color)
         + footer
     )
