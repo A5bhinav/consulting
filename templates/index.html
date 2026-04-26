@@ -253,23 +253,6 @@
             >{{ form_data.proposed_solution if form_data else '' }}</textarea>
           </div>
 
-          <div>
-            <div class="flex items-baseline justify-between mb-1">
-              <label class="block text-xs font-medium text-slate-600">
-                Outreach email draft
-              </label>
-              <span class="text-xs text-slate-400">Optional</span>
-            </div>
-            <p class="text-xs text-slate-400 mb-1.5">
-              Paste your draft or key points. Helps match the tone of the generated email.
-            </p>
-            <textarea
-              name="email_draft"
-              rows="3"
-              placeholder="Paste a draft or a few bullet points..."
-              class="input-base"
-            >{{ form_data.email_draft if form_data else '' }}</textarea>
-          </div>
         </div>
 
         <div class="border-t border-slate-100 mb-7"></div>
@@ -309,21 +292,6 @@
             </div>
           </div>
 
-          <div>
-            <label class="block text-xs font-medium text-slate-600 mb-1">
-              About your club / team <span class="text-indigo-500">*</span>
-            </label>
-            <p class="text-xs text-slate-400 mb-1.5">
-              1 short paragraph. Who are you and why are you qualified?
-            </p>
-            <textarea
-              name="club_description"
-              required
-              rows="3"
-              placeholder="e.g. We're a 30-person consulting club at UC Berkeley with past projects in retail ops, customer analytics, and go-to-market strategy."
-              class="input-base"
-            >{{ form_data.club_description if form_data else '' }}</textarea>
-          </div>
         </div>
 
         <!-- Submit -->

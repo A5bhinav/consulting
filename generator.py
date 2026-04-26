@@ -390,6 +390,7 @@ def _build_cta(cta_body: str, accent_color: str, sender_email: str) -> str:
         f'style="color:{accent_color};" '
         f'class="inline-block bg-white font-semibold px-8 py-4 rounded-lg '
         f'hover:opacity-90 transition-opacity">Get in touch</a>\n'
+        f'    <p class="text-white/50 text-sm mt-5">{sender_email}</p>\n'
         f"  </div>\n</section>\n"
     )
 

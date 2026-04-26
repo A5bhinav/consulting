@@ -20,12 +20,25 @@ OUTPUT_DIR = BASE_DIR / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 PITCHES_FILE = BASE_DIR / "pitches.json"
 
+CLUB_DESCRIPTION = (
+    "Paradigm Consulting is the premier, multidisciplinary student-run consulting organization "
+    "at UC Berkeley, operating in partnership with the professional fraternity Alpha Epsilon Zeta "
+    "(AEZ). Established in 2003, the organization is highly selective, admitting only the top 6% "
+    "of applicants from a wide variety of academic backgrounds, including engineering, biology, "
+    "and business. Paradigm offers specialized tracks in strategic consulting—focusing on market "
+    "research and business model innovation—and technical consulting, which covers AI/ML integration "
+    "and cloud architecture. With a rigorous training process and a commitment of nearly 1,000 hours "
+    "per project, they have delivered high-level solutions for prestigious global clients such as "
+    "eBay, Bose, Dropbox, and Visa. Their alumni network is equally distinguished, with former "
+    "members transitioning into leadership roles at \"Big Three\" consulting firms, top-tier tech "
+    "companies like Google and Meta, and elite graduate programs at Stanford and Harvard."
+)
+
 REQUIRED_FIELDS = [
     ("company_name", "Company name is required."),
     ("company_url", "Company URL is required."),
     ("industry", "Industry is required."),
     ("proposed_solution", "Proposed solution is required."),
-    ("club_description", "Club description is required."),
     ("sender_name", "Your name is required."),
     ("sender_email", "Your email is required."),
 ]
@@ -76,8 +89,6 @@ def generate():
         company_url = "https://" + company_url
     industry = form["industry"].strip()
     proposed_solution = form["proposed_solution"].strip()
-    email_draft = form.get("email_draft", "").strip()
-    club_description = form["club_description"].strip()
     recent_context = form.get("recent_context", "").strip()
     sender_name = form["sender_name"].strip()
     sender_email = form["sender_email"].strip()
@@ -88,8 +99,8 @@ def generate():
             company_url=company_url,
             industry=industry,
             proposed_solution=proposed_solution,
-            email_draft=email_draft,
-            club_description=club_description,
+            email_draft="",
+            club_description=CLUB_DESCRIPTION,
             recent_context=recent_context,
         )
     except RuntimeError as e:

@@ -38,3 +38,11 @@ Costco's fulfillment model for big-ticket and bulky direct-ship items has struct
 The $11.6B Globalstar acquisition gives Amazon Leo licensed spectrum and an Apple direct-to-device channel that Starlink can't replicate — but Globalstar's legacy ground infrastructure covers fewer than 50 stations globally, which creates a real deployment sequencing problem before Leo can compete on coverage. We're a strategy consulting team at UC Berkeley's Paradigm Consulting, and we've been mapping the specific verticals where Starlink's enterprise churn and pricing gaps create a realistic entry window for Leo in the next 24 months. We'd like to share a 6-week engagement proposal built around that analysis — one concrete deliverable being a segment-by-segment market entry map tied to Leo's current spectrum position. Would a 15-minute call this or next week work to walk through the framing?
 
 ---
+
+## Google
+
+**Subject:** Gemini's enterprise gap — a 6-week audit worth considering
+
+Google's Anthropic investment and Gemini's internal roadmap are pulling in opposite directions, and the developer adoption data from the past two quarters reflects that tension. We're a UC Berkeley consulting team that has been tracking Gemini's benchmark positioning against GPT-4o and Claude 3.5 across enterprise use cases — and we think there's a specific, addressable gap in the 0-30 day developer evaluation window that's costing Gemini platform commitments it should be winning. We'd like to share a preliminary version of that analysis with your team. Would a 15-minute call this week or next work?
+
+---
